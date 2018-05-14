@@ -32,19 +32,27 @@ namespace Cake.Common.Solution
         public IReadOnlyCollection<SolutionProject> Projects { get; }
 
         /// <summary>
+        /// Gets all configuration/platform pairs in the solution.
+        /// </summary>
+        public IReadOnlyCollection<SolutionConfigurationPlatform> SolutionConfigurationPlatforms { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SolutionParserResult"/> class.
         /// </summary>
         /// <param name="version">The file format version.</param>
         /// <param name="visualStudioVersion">The version of Visual Studio that created the file.</param>
         /// <param name="minimumVisualStudioVersion">The minimum supported version of Visual Studio.</param>
         /// <param name="projects">The solution projects.</param>
+        /// <param name="solutionConfigurationPlatforms">The solution configuration/platform pairs.</param>
         public SolutionParserResult(string version, string visualStudioVersion,
-            string minimumVisualStudioVersion, IReadOnlyCollection<SolutionProject> projects)
+            string minimumVisualStudioVersion, IReadOnlyCollection<SolutionProject> projects,
+            IReadOnlyCollection<SolutionConfigurationPlatform> solutionConfigurationPlatforms)
         {
             Version = version;
             VisualStudioVersion = visualStudioVersion;
             MinimumVisualStudioVersion = minimumVisualStudioVersion;
             Projects = projects;
+            SolutionConfigurationPlatforms = solutionConfigurationPlatforms;
         }
     }
 }

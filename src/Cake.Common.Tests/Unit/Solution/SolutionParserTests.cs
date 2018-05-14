@@ -73,6 +73,23 @@ namespace Cake.Common.Tests.Unit.Solution
             }
 
             [Fact]
+            public void Should_Properly_Parse_SolutionConfigurationPlatforms()
+            {
+                // Given
+                var fixture = new SolutionParserFixture();
+                var slnFilePath = fixture.WithSolutionFile(Resources.Solution_WithProjectsAndFolders);
+                var solutionParser = new SolutionParser(fixture.FileSystem, fixture.Environment);
+
+                // When
+                var result = solutionParser.Parse(slnFilePath);
+
+                // Then
+                Assert.NotNull(result);
+                Assert.NotNull(result.SolutionConfigurationPlatforms);
+                Assert.Equal(2, result.SolutionConfigurationPlatforms.Count);
+            }
+
+            [Fact]
             public void Should_Properly_Parse_Folders()
             {
                 // Given

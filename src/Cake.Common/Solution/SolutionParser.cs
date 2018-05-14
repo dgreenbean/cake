@@ -69,7 +69,9 @@ namespace Cake.Common.Solution
                 visualStudioVersion = null,
                 minimumVisualStudioVersion = null;
             var projects = new List<SolutionProject>();
+            var solutionConfigurationPlatforms = new List<SolutionConfigurationPlatform>();
             bool inNestedProjectsSection = false;
+            bool inSolutionConfigurationPlatforms = false;
             foreach (var line in file.ReadLines(Encoding.UTF8))
             {
                 var trimmed = line.Trim();
@@ -107,12 +109,25 @@ namespace Cake.Common.Solution
                 {
                     ParseNestedProjectLine(projects, trimmed);
                 }
+                else if (trimmed.StartsWith("GlobalSection(SolutionConfigurationPlatforms)"))
+                {
+                    inSolutionConfigurationPlatforms = true;
+                }
+                else if (inSolutionConfigurationPlatforms && trimmed.StartsWith("EndGlobalSection"))
+                {
+                    inSolutionConfigurationPlatforms = false;
+                }
+                else if (inSolutionConfigurationPlatforms)
+                {
+                    ParseSolutionConfigurationPlatformLine(solutionConfigurationPlatforms, trimmed);
+                }
             }
             var solutionParserResult = new SolutionParserResult(
                 version,
                 visualStudioVersion,
                 minimumVisualStudioVersion,
-                projects.AsReadOnly());
+                projects.AsReadOnly(),
+                solutionConfigurationPlatforms.AsReadOnly());
             return solutionParserResult;
         }
 
@@ -177,6 +192,31 @@ namespace Cake.Common.Solution
 
             parent.Items.Add(child);
             child.Parent = parent;
+        }
+
+        private static void ParseSolutionConfigurationPlatformLine(
+            List<SolutionConfigurationPlatform> solutionConfigurationPlatforms, string line)
+        {
+            if (string.IsNullOrEmpty(line))
+            {
+                return;
+            }
+
+            // pattern: {Key} = {Configuration|Platform}
+            var splitLine = line.Split(new[] { " = " }, StringSplitOptions.RemoveEmptyEntries);
+            if (splitLine == null || splitLine.Length != 2)
+            {
+                return;
+            }
+
+            var configurationPlatform = splitLine[1].Split('|');
+            if (configurationPlatform == null || configurationPlatform.Length != 2)
+            {
+                return;
+            }
+
+            solutionConfigurationPlatforms.Add(
+                new SolutionConfigurationPlatform(configurationPlatform[0], configurationPlatform[1]));
         }
     }
 }

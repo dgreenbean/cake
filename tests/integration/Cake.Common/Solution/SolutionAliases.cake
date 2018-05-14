@@ -2,6 +2,7 @@
 #load "./../../utilities/paths.cake"
 #load "./../../utilities/comparers/SolutionParserResultEqualityComparer.cake"
 #load "./../../utilities/comparers/SolutionProjectEqualityComparer.cake"
+#load "./../../utilities/comparers/SolutionConfigurationPlatformEqualityComparer.cake"
 
 Task("Cake.Common.Solution.SolutionAliases.ParseSolution")
     .Does(() =>
@@ -26,6 +27,10 @@ Task("Cake.Common.Solution.SolutionAliases.ParseSolution")
                     path: path.CombineWithFilePath("ReferenceProject/ReferenceProject.csproj"),
                     type: "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 )
+            }),
+        solutionConfigurationPlatforms: new System.Collections.ObjectModel.ReadOnlyCollection<SolutionConfigurationPlatform>(new[] {
+                new SolutionConfigurationPlatform("Debug", "Any CPU"),
+                new SolutionConfigurationPlatform("Release", "Any CPU")
             })
         );
 
@@ -35,6 +40,7 @@ Task("Cake.Common.Solution.SolutionAliases.ParseSolution")
     // Then
     Assert.NotNull(result);
     Assert.Equal(expect.Projects, result.Projects, SolutionProjectEqualityComparer.Comparer);
+    Assert.Equal(expect.SolutionConfigurationPlatforms, result.SolutionConfigurationPlatforms, SolutionConfigurationPlatformEqualityComparer.Comparer);
     Assert.Equal(expect, result, SolutionParserResultEqualityComparer.Comparer);
 });
 
